@@ -8,4 +8,8 @@ userRoutes.get('/', controller.allUsers);
 // obtener un usuario por id
 userRoutes.get('/:id', controller.userId);
 
+userRoutes.post('/', controller.createUser);
+
+userRoutes.delete('/:id', controller.deleteUser);
+
 module.exports = userRoutes;
