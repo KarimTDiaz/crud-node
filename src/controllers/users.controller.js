@@ -56,6 +56,16 @@ controller.deleteUser = (req, res) => {
         .send('Error al leer el archivo de usuarios, sorry');
     const jsonData = JSON.parse(data);
     const user = jsonData.findIndex(user => req.params.id === user.userId);
+    if (user === -1) {
+      return res
+        .status(409)
+        .send('No se encuentra el usuario que desea eliminar');
+    }
+    jsonData.splice(user, 1);
+    fs.writeFile(usersFile, JSON.stringify(jsonData), err => {
+      if (err) throw err;
+      res.send(usersFile);
+    });
   });
 };
 module.exports = controller;
