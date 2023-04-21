@@ -1,11 +1,18 @@
-const fetchData = async (url, method) => {
-  const request = await fetch(url, {
-    method: method
-  });
-  const data = await request.json();
-  return data;
-};
+const userContainer = document.getElementById('users');
+const inputElement = document.getElementById('input');
+const formElement = document.getElementById('form');
+const formNewUserElement = document.getElementById('form-add');
 
+let userId;
+const fetchData = async (url, ...options) => {
+  try {
+    const request = await fetch(url, ...options);
+    const data = await request.json();
+    return data;
+  } catch (err) {
+    console.log(err);
+  }
+};
 const printUsers = users => {
   const fragment = document.createDocumentFragment();
   users.forEach(user => {
@@ -17,9 +24,13 @@ const printUsers = users => {
     const deleteButton = document.createElement('button');
     deleteButton.textContent = 'Delete';
     deleteButton.dataset.id = user.userId;
-    fragment.append(userName, button, deleteButton);
+    const editButton = document.createElement('button');
+    editButton.textContent = 'Edit';
+    editButton.dataset.id = user.userId;
+    editButton.dataset.name = user.name;
+    fragment.append(userName, button, deleteButton, editButton);
   });
-  document.body.append(fragment);
+  userContainer.append(fragment);
 };
 
 const printDetails = user => {
@@ -29,29 +40,68 @@ const printDetails = user => {
   const userEmail = document.createElement('p');
   userEmail.textContent = user.email;
   fragment.append(userName, userEmail);
-  document.body.append(fragment);
+  userContainer.append(fragment);
 };
 const users = async () => {
-  const users = await fetchData('http://localhost:3000/api/users', 'GET');
+  const users = await fetchData('http://localhost:3000/api/users', {
+    method: 'GET'
+  });
   printUsers(users);
 };
+
 const details = async (id, ev) => {
-  console.log(ev.target.textContent);
   if (ev.target.textContent === 'details') {
-    const user = await fetchData(
-      'http://localhost:3000/api/users/' + id,
-      'GET'
-    );
+    const user = await fetchData('http://localhost:3000/api/users/' + id, {
+      method: 'GET'
+    });
     printDetails(user);
   } else if (ev.target.textContent === 'Delete') {
-    fetchData('http://localhost:3000/api/users/' + id, 'DELETE');
+    const user = fetchData('http://localhost:3000/api/users/' + id, {
+      method: 'DELETE'
+    });
   }
 };
 
-users();
-
+const editUser = name => {
+  inputElement.value = name;
+};
+const updateUser = async () => {
+  await fetchData('http://localhost:3000/api/users/' + userId, {
+    method: 'PATCH',
+    body: JSON.stringify({ name: inputElement.value }),
+    headers: {
+      Accept: '*/*',
+      'Content-Type': 'application/json'
+    }
+  });
+};
+const createUser = async (name, email) => {
+  await fetchData('http://localhost:3000/api/users', {
+    method: 'POST',
+    body: JSON.stringify({ name, email }),
+    headers: {
+      Accept: '*/*',
+      'Content-Type': 'application/json'
+    }
+  });
+};
 document.body.addEventListener('click', ev => {
   if (ev.target.dataset.id) {
     details(ev.target.dataset.id, ev);
   }
+  if (ev.target.textContent === 'Edit') {
+    editUser(ev.target.dataset.name);
+    userId = ev.target.dataset.id;
+  }
 });
+
+formElement.addEventListener('submit', ev => {
+  ev.preventDefault();
+  updateUser();
+});
+
+formNewUserElement.addEventListener('submit', ev => {
+  ev.preventDefault();
+  createUser(ev.target.name.value, ev.target.email.value);
+});
+users();

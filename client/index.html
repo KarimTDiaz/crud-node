@@ -1,14 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="X-UA-Compatible"
+      content="IE=edge"
+    />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
     <title>Document</title>
-</head>
-<body>
+  </head>
+  <body>
     <h1>Users List</h1>
-    
+    <div
+      id="users"
+      class="users"
+    ></div>
+    <form id="form">
+      <input
+        id="input"
+        type="text"
+        name="user-name"
+      />
+      <input type="submit" />
+    </form>
+
+    <form id="form-add">
+      <h2>Añade un usuario</h2>
+
+      <label for="newName">Name</label>
+      <input
+        type="text"
+        name="name"
+      />
+
+      <label for="new-user-name">Email</label>
+      <input
+        type="text"
+        name="email"
+      />
+      <input type="submit" />
+    </form>
+
     <script src="js/index.js"></script>
-</body>
+  </body>
 </html>
